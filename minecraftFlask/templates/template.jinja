@@ -6,6 +6,7 @@
 <title>UCI Triangle Minecraft Server Dashboard</title>
 
 <style>
+
 .header {
     overflow: hidden;
     border-left: 6px solid red;
@@ -20,16 +21,35 @@
 .main {
     margin-top: 30px;
 }
+
+#messages { list-style-type: none; margin: 0; padding: 0; }
+#messages li { padding: 5px 10px; }
+#messages li:nth-child(odd) { background: #eee; }
+
 </style>
 </head>
 
 <body>
 <div class="header">
-    &nbsp; {{ header }}
+    &nbsp;
+    
+    {% if serverUp %}
+        The server has the following players online 
+        ({{ query.players.online }}/{{ query.players.max }}): 
+        {{ ", ".join(query.players.names) }}
+    {% else %}
+        Minecraft server currently down
+    {% endif %}
 </div>
 <div class="main">
     <p>
-    {{ body }}
+    <ul id="messages">
+        {% if serverUp %}
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        {% endif %}
+    </ul>
 </div>
 </body>
 </html>

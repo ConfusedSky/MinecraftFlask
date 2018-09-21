@@ -1,12 +1,5 @@
-import os
-
 from flask import Flask
-from flask import render_template
-from mcstatus import MinecraftServer
-import subprocess
-import sys
-import cgi
-import socket
+import os
 
 def create_app(test_config=None):
     # create and configure the app
@@ -34,32 +27,8 @@ def create_app(test_config=None):
     def hello():
         return 'Hello, World!'
 
-    @app.route('/')
-    def generateMCScreen():
-        f = subprocess.Popen(['tail', '-n', '100', '/home/masa/Documents/MinecraftServers/Vanilla1-12-2/logs/latest.log'], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        server = MinecraftServer("72.194.118.95",25565)
+    from . import chat 
+    app.register_blueprint(chat.bp)
+    app.add_url_rule('/', endpoint='index')
 
-        try:
-            server.ping()
-            query = server.query()
-        except socket.error:
-            header = "Minecraft server currently down"
-            body = ""
-            return render_template("template.jinja", header=header, body=body)
-        
-        header = "&nbspThe server has the following players online ({}, {}):".format(
-            query.players.online, query.players.max) + " " + \
-            ", ".join(query.players.names)
-        body = ""
-
-        while True:
-            line = f.stdout.readline()
-            if not line:
-                break
-            if "Server thread" not in line:
-                continue
-            line = line.split(" ")[0] + " " + ":".join(line.split(":")[3:])[1:]
-            body += cgi.escape(line) + "</br>\n"
-
-        return render_template("template.jinja", header=header, body=body)
     return app
