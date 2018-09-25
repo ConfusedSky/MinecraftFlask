@@ -7,9 +7,9 @@ import cgi
 import socket
 import os
 from mcstatus import MinecraftServer
+from . import socketio
 
 bp = Blueprint('index', __name__)
-
 
 @bp.route('/')
 def index():
