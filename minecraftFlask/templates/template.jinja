@@ -39,7 +39,7 @@
         socket.on('disconnect', function() {
             $('#messages').append($('<li>').text("Server disconnected"));
         });
-        socket.on('connect', function(msg) {
+        socket.on('connect', function() {
             $('#messages').append($('<li>').text("Server connected"));
         });
     });

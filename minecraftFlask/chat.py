@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, g, render_template, request, url_for
+    Blueprint, g, render_template, request, url_for, jsonify
 )
 import subprocess
 import sys
@@ -10,6 +10,24 @@ from mcstatus import MinecraftServer
 from . import socketio
 
 bp = Blueprint('index', __name__)
+
+@bp.route("/status")
+def status():
+    server = MinecraftServer("localhost", 25565)
+    try:
+        query = server.query()
+        qtup =  {
+                    "players":
+                    {
+                        "online": query.players.online,
+                        "max": query.players.max,
+                        "names": query.players.names
+                    },
+                    "serverUp": True
+                }
+    except socket.error:
+        qtup = { "serverUp": False }
+    return jsonify(qtup)
 
 @bp.route('/')
 def index():
