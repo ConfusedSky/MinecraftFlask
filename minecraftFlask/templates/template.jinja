@@ -51,6 +51,8 @@
 
         socket.on('server log', function(msg) {
             $('#messages').append($('<li>').text(msg));
+            //window.scrollTo(0, document.body.scrollHeight);
+            window.scrollTo({top: document.body.scrollHeight, behavior: "smooth"});
         });
         socket.on('update header', function() {
             updateHeader();
@@ -61,6 +63,8 @@
         socket.on('connect', function() {
             //$('#messages').append($('<li>').text("Server connected"));
             updateHeader();
+            //window.scrollTo(0, document.body.scrollHeight);
+            window.scrollTo({top: document.body.scrollHeight, behavior: "smooth"});
         });
     });
 </script>

@@ -6,6 +6,7 @@ import sys
 import cgi
 import socket
 import os
+import re
 from mcstatus import MinecraftServer
 from threading import Lock
 from . import socketio
@@ -22,14 +23,15 @@ def background_thread():
             break
         # Do things with the line
         if "joined" in line:
-            print("Emitting header update")
-            socketio.sleep(.5)
+            socketio.sleep(2)
             socketio.emit("update header")
         if "left" in line:
-            print("Emitting header update")
             socketio.sleep(2)
             socketio.emit("update header")
         print(line)
+        if "<" in line or "[Server]" in line:
+            line = ":".join(line.split(":")[3:])[1:]
+            socketio.emit('server log', line)
 
 @socketio.on('connect')
 def connect():
@@ -65,9 +67,9 @@ def index():
         line = f.stdout.readline()
         if not line:
             break
-        if "Server thread" not in line:
-            continue
-        line = line.split(" ")[0] + " " + ":".join(line.split(":")[3:])[1:]
-        messages.append(cgi.escape(line))
+        if "<" in line or "[Server]" in line:
+            #line = line.split(" ")[0] + " " + ":".join(line.split(":")[3:])[1:]
+            line = ":".join(line.split(":")[3:])[1:]
+            messages.append(cgi.escape(line))
 
     return render_template("template.jinja", messages=messages)
