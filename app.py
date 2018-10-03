@@ -1,5 +1,4 @@
 import minecraftFlask
-from flask_socketio import SocketIO
 from minecraftFlask import socketio
 
 app = minecraftFlask.create_app()

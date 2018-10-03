@@ -1,11 +1,15 @@
 click==6.7
 dnspython==1.15.0
+enum34==1.1.6
+eventlet==0.24.1
 Flask==1.0.2
 Flask-SocketIO==3.0.2
+greenlet==0.4.15
 itsdangerous==0.24
 Jinja2==2.10
 MarkupSafe==1.0
 mcstatus==2.2
+monotonic==1.5
 pkg-resources==0.0.0
 python-engineio==2.2.0
 python-socketio==2.0.0
