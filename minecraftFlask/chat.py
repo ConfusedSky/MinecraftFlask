@@ -21,17 +21,22 @@ def background_thread():
         line = f.stdout.readline()
         if not line:
             break
-        # Do things with the line
-        if "joined" in line:
-            socketio.sleep(2)
-            socketio.emit("update header")
-        if "left" in line:
-            socketio.sleep(2)
-            socketio.emit("update header")
         print(line)
+        # Do things with the line
         if "<" in line or "[Server]" in line:
-            line = ":".join(line.split(":")[3:])[1:]
+            line = ":".join(line.split(":")[3:])[1:-1]
             socketio.emit('server log', line)
+        elif "joined" in line:
+            socketio.sleep(2)
+            socketio.emit("update header")
+        elif "left" in line:
+            socketio.sleep(2)
+            socketio.emit("update header")
+        elif "Stopping server" in line:
+            socketio.emit('server disconnect')
+        elif "Starting remote control listener" in line:
+            socketio.sleep(2)
+            socketio.emit('server connect')
 
 @socketio.on('connect')
 def connect():
@@ -39,6 +44,23 @@ def connect():
     with thread_lock:
         if thread is None or not thread.isAlive():
             thread = socketio.start_background_task(target=background_thread)
+
+@bp.route("/messages")
+def messages():
+    f = subprocess.Popen(['tail', '-n', '100', '/home/masa/Documents/MinecraftServers/Vanilla1-12-2/logs/latest.log'], stdout=subprocess.PIPE)
+
+    msgs = []
+    while True:
+        line = f.stdout.readline()
+        if not line:
+            break
+        if "<" in line or "[Server]" in line:
+            #line = line.split(" ")[0] + " " + ":".join(line.split(":")[3:])[1:]
+            line = ":".join(line.split(":")[3:])[1:-1]
+            msgs.append(line)
+
+    reseponse = {"messages": msgs}
+    return jsonify(reseponse)
 
 @bp.route("/status")
 def status():
@@ -60,16 +82,4 @@ def status():
 
 @bp.route('/')
 def index():
-    f = subprocess.Popen(['tail', '-n', '100', '/home/masa/Documents/MinecraftServers/Vanilla1-12-2/logs/latest.log'], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-
-    messages = []
-    while True:
-        line = f.stdout.readline()
-        if not line:
-            break
-        if "<" in line or "[Server]" in line:
-            #line = line.split(" ")[0] + " " + ":".join(line.split(":")[3:])[1:]
-            line = ":".join(line.split(":")[3:])[1:]
-            messages.append(cgi.escape(line))
-
-    return render_template("template.jinja", messages=messages)
+    return render_template("template.jinja")
