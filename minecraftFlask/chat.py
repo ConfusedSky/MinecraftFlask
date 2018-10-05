@@ -45,6 +45,11 @@ def connect():
         if thread is None or not thread.isAlive():
             thread = socketio.start_background_task(target=background_thread)
 
+@socketio.on('minecraft message')
+def minecraftMessage(message):
+    print(message)
+    pass
+
 @bp.route("/messages")
 def messages():
     f = subprocess.Popen(['tail', '-n', '100', '/home/masa/Documents/MinecraftServers/Vanilla1-12-2/logs/latest.log'], stdout=subprocess.PIPE)
