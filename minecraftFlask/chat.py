@@ -10,6 +10,7 @@ import re
 from mcstatus import MinecraftServer
 from threading import Lock
 from . import socketio
+import client
 
 bp = Blueprint('index', __name__)
 thread = None
@@ -47,8 +48,7 @@ def connect():
 
 @socketio.on('minecraft message')
 def minecraftMessage(message):
-    print(message)
-    pass
+    client.sendChat(message)
 
 @bp.route("/messages")
 def messages():

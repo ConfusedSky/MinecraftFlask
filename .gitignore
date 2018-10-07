@@ -112,3 +112,5 @@ dmypy.json
 
 *.un~
 *.swp
+pyCraft/
+minecraft.auth
