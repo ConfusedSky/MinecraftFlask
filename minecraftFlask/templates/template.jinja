@@ -65,6 +65,10 @@
                 headerDown();
                 $('#messages').empty();
             }
+        }).fail(function(jqxhr, textStatus, error) {
+            console.log("Server Down");
+            headerDown();
+            $('#messages').empty();
         });
     }
     function loadChat() {
@@ -93,10 +97,10 @@
         });
         socket.on('update header', updateHeader);
         socket.on('disconnect', function() {
-            //$('#messages').append($('<li>').text("Server disconnected"));
+            updateHeader();
+            console.log('Disconnected')
         });
         socket.on('connect', function() {
-            //$('#messages').append($('<li>').text("Server connected"));
             updateHeader();
             loadChat();
             //window.scrollTo(0, document.body.scrollHeight);
