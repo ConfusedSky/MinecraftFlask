@@ -2,6 +2,7 @@
 
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 <title>UCI Triangle Minecraft Server Dashboard</title>
 
 <style>
@@ -46,7 +47,7 @@
     function addMessage(msg) {
         $('#messages').append($('<li>').text(msg));
         //window.scrollTo(0, document.body.scrollHeight);
-        window.scrollTo({top: document.body.scrollHeight, behavior: "smooth"});
+        window.scroll({top: document.body.scrollHeight, behavior: "smooth"});
     }
     function headerDown() {
         $("#headerText").text("Minecraft server currently down");
@@ -86,7 +87,7 @@
         });
     } 
     $(function () {
-        var socket = io();
+        var socket = io({transports: ['polling']});
         socket.on('server connect', function(){
             updateHeader();
         });
@@ -107,7 +108,10 @@
             window.scrollTo({top: document.body.scrollHeight, behavior: "smooth"});
         });
         function sendMessage() {
-            var message = $('.inputMessage').val();
+            // I know this should probably be done server side but this is a lot easier
+            var message = $('.inputMessage').val()
+                .replace(/[\u2018\u2019]/g, "'")
+                .replace(/[\u201C\u201D]/g, '"');
             $('.inputMessage').val('');
             socket.emit('minecraft message', message);
         }
